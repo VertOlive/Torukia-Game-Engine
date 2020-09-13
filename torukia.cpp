@@ -4,8 +4,65 @@
 
 namespace Torukia {
 
+SDL_Window *TorukiaEngine::get_sdl_window() const {
+	return _sdl_window;
+}
+
+SDL_Renderer *TorukiaEngine::get_sdl_renderer() const {
+	return _sdl_renderer;
+}
+
+bool TorukiaEngine::init_sdl() {
+	bool sdl_video = false;
+	Uint32 sdl_window_flags = 0;
+
+	Uint32 sdl_flags = 0;
+	if( !(_init_flags & InitFlags::no_video) ){
+		sdl_video = true;
+		sdl_flags += SDL_INIT_VIDEO;
+	}
+	if( !(_init_flags & InitFlags::no_sound) ){
+		sdl_flags += SDL_INIT_SOUND;
+	}
+	if( !(_init_flags & InitFlags::no_input) ){
+		sdl_flags += SDL_INIT_EVENT;
+	}
+	if( _init_flags & InitFlags::set_opengl_context ){
+		sdl_window_flags = SDL_WINDOW_OPENGL;
+	}
+
+	if( SDL_Init(sdl_flags) != 0){
+		SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
+		return 1;
+	}
+	if(sdl_video) 
+		SDL_CreateWindowAndRenderer(m_window_width,
+									m_window_height,
+									sdl_window_flags,
+									&_sdl_window,
+									&_sdl_renderer);
+	return 0;
+}
+
+bool TorukiaEngine::clean_sdl() {
+	SDL_Quit();
+}
+
 int TorukiaEngine::run(const int flags) {
-	std::cout << "Running instance." << std::endl; 
+	std::cout << "Running instance." << std::endl;
+	if(init_sdl()){
+		std::cout << "Torukia run aborded." << std::endl;
+		clean_sdl();
+		return 1;
+	}
+	while(!SDL_QuitRequested()){
+		if( !(_init_flags & InitFlags::no_logic) )
+			user_logic();
+		if( !(_init_flags & InitFlags::no_video) )
+			user_view();
+	}
+
+	clean_sdl();
 	return 0;
 }
 
@@ -53,7 +110,7 @@ std::string TorukiaEngine::get_all_info() const {
 	std::stringstream out;
 
 	out << _game_instance_name 
-	    << "TorukiaEngine object instance at memory "
+	    << "TorukiaEngine object instance at memory: "
 	    << this
 	    << std::endl;
 	out << "   Init flags set -> " << std::endl;

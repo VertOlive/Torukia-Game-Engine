@@ -8,5 +8,6 @@ int main(int argc, char const *argv[])
 	std::cout << test << std::endl;
 
 	test.run_tests();
+
 	return 0;
 }
