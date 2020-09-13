@@ -39,23 +39,6 @@ private:
 	unsigned int m_window_pos_y;
 
 protected:
-	const int32_t _init_flags;   /**< Flags set at the creation of the instance, not given to the user code */
-	int32_t _context_flags;      /**< Flags */
-	int32_t _user_flags;         /**< Flags set at the run methode call, given to the user code logic */
-
-	SDL_Window *get_sdl_window() const;
-	SDL_Renderer *get_sdl_renderer() const;
-	/** @fn void set_context_flags(ContextFlags flag)
-	 *  @bref Set the context flags of the instance.
-	 */
-	void set_context_flags(const ContextFlags flag, const bool value);
-	/** @fn void set_context_flags(const int flags)
-	 *  @bref Set the context flags of the instance.
-	 */
-	void set_context_flags(const int32_t flags);
-	virtual bool user_logic() {};
-	virtual void user_view() {};
-public:
 	/** @enum TorukiaEngine::InitFlags
 	 *  Flags for instansiation of the objet TorukiaEngine.
 	 */
@@ -73,6 +56,24 @@ public:
 		error_n_1 = 1,
 		error_user_code = 2
 	};
+
+	const int32_t _init_flags;   /**< Flags set at the creation of the instance, not given to the user code */
+	int32_t _context_flags;      /**< Flags */
+	int32_t _user_flags;         /**< Flags set at the run methode call, given to the user code logic */
+
+	SDL_Window *get_sdl_window() const;
+	SDL_Renderer *get_sdl_renderer() const;
+	/** @fn void set_context_flags(ContextFlags flag)
+	 *  @bref Set the context flags of the instance.
+	 */
+	void set_context_flags(const ContextFlags flag, const bool value);
+	/** @fn void set_context_flags(const int flags)
+	 *  @bref Set the context flags of the instance.
+	 */
+	void set_context_flags(const int32_t flags);
+	virtual bool user_logic() {};
+	virtual void user_view() {};
+public:
 	/** @brief Constructor of the TorukiaEngine game engine class.
 	 *
 	 *  Create an object representing the instance of the game engine
@@ -101,15 +102,18 @@ public:
 				m_window_height(window_height),
 				_init_flags(init_flags),
 				_context_flags(0),
-				_user_flags(0),
-				_quit(false)
+				_user_flags(0)
 	{
 
 	}
 	~TorukiaEngine() {}
-
 	TorukiaEngine(const TorukiaEngine&) = delete;
 	TorukiaEngine& operator=(const TorukiaEngine&) = delete;
+
+	friend std::ostream& operator<<(std::ostream& out, const TorukiaEngine& torukia_context) {
+		out << torukia_context.get_all_info();
+		return out;
+	}
 
 	bool init_sdl();
 	bool clean_sdl();
@@ -160,11 +164,6 @@ public:
 	 */
 	std::string get_all_info() const;
 };
-
-std::ostream& operator<<(std::ostream& out, const TorukiaEngine& torukia_context) {
-	out << torukia_context.get_all_info();
-	return out;
-}
 
 class TorukiaEngineUnitTest : public TorukiaEngine {
 public:

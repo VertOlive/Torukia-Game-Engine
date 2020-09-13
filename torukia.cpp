@@ -22,10 +22,10 @@ bool TorukiaEngine::init_sdl() {
 		sdl_flags += SDL_INIT_VIDEO;
 	}
 	if( !(_init_flags & InitFlags::no_sound) ){
-		sdl_flags += SDL_INIT_SOUND;
+		sdl_flags += SDL_INIT_AUDIO;
 	}
 	if( !(_init_flags & InitFlags::no_input) ){
-		sdl_flags += SDL_INIT_EVENT;
+		sdl_flags += SDL_INIT_EVENTS;
 	}
 	if( _init_flags & InitFlags::set_opengl_context ){
 		sdl_window_flags = SDL_WINDOW_OPENGL;
